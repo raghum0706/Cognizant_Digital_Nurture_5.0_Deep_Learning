@@ -1,0 +1,33 @@
+DELIMITER //
+
+CREATE PROCEDURE TransferFunds(
+    IN from_acc INT,
+    IN to_acc INT,
+    IN amt DOUBLE
+)
+BEGIN
+    DECLARE current_balance DOUBLE;
+
+    -- Get balance of sender
+    SELECT Balance INTO current_balance
+    FROM Accounts
+    WHERE AccountID = from_acc;
+
+    -- Check sufficient balance
+    IF current_balance >= amt THEN
+
+        UPDATE Accounts
+        SET Balance = Balance - amt
+        WHERE AccountID = from_acc;
+
+        UPDATE Accounts
+        SET Balance = Balance + amt
+        WHERE AccountID = to_acc;
+
+    ELSE
+        SELECT 'Insufficient Balance' AS Message;
+    END IF;
+
+END //
+
+DELIMITER ;
